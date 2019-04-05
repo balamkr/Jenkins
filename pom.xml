@@ -1,185 +1,235 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-   <modelVersion>4.0.0</modelVersion>
-   <groupId>Struct3</groupId>
-   <artifactId>Session3</artifactId>
-   <packaging>war</packaging>
-   <name>Session3</name>
-   <version>1.0.0-SNAPSHOT</version>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-   <properties>
-      <!--
-         Explicitly declaring the source encoding eliminates the following message:
-         [WARNING] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
-      -->
-      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-      <!-- The version of Weld extensions in use -->
-      <weld.extensions.version>1.0.0-CR2</weld.extensions.version>
-   </properties>
+    <groupId>Test</groupId>
+    <artifactId>Test20</artifactId>
+    <version>1.0-SNAPSHOT</version>
 
-   <repositories>
-       <!-- Several key Java EE APIs and RIs are missing from the Maven Central Repository -->
-       <!-- The goal is to eventually eliminate the reliance on the JBoss repository -->
-       <repository>
-          <id>repository.jboss.org</id>
-          <name>JBoss Repository</name>
-          <url>http://repository.jboss.org/maven2</url>
-       </repository>
-   </repositories>
+    <packaging>war</packaging>
 
-   <dependencyManagement>
-      <dependencies>
-         <!-- Import scope will provide versions for dependencies below. -->
-         <dependency>
-            <groupId>org.jboss.weld</groupId>
-            <artifactId>weld-extensions-bom</artifactId>
-            <version>${weld.extensions.version}</version>
-            <type>pom</type>
-            <scope>import</scope>
-         </dependency>
-      </dependencies>
-   </dependencyManagement>
+    <properties>
+        <maven.test.skip>true</maven.test.skip>
+        <maven.install.skip>true</maven.install.skip>
+        <maven.deploy.skip>true</maven.deploy.skip>
 
-   <dependencies>
+        <beanstalk.environmentRef>Test20-env.elasticbeanstalk.com</beanstalk.environmentRef>
+        <beanstalk.environmentName>Test20-env</beanstalk.environmentName>
+        <beanstalk.cnamePrefix>Test20-env</beanstalk.cnamePrefix>
+        <beanstalk.applicationName>Test20</beanstalk.applicationName>
+        <beanstalk.useStagingDirectory>true</beanstalk.useStagingDirectory>
+        <beanstalker.region>us-east-1</beanstalker.region>
+        <!-- review src/main/webapp/.ebextensions/java7.config if you change this setting
+        -->
+        <beanstalk.solutionStack>64bit Amazon Linux running Tomcat 7</beanstalk.solutionStack>
+        <!-- switch to .../health/check when you set iamInstanceProfile below -->
+        <beanstalk.applicationHealthCheckURL>/services/api/v1/debug</beanstalk.applicationHealthCheckURL>
+        <beanstalk.environmentType>SingleInstance</beanstalk.environmentType>
+        <!-- replace with your environment details -->
+        <!--
+        <beanstalk.keyName>[your-key-name]</beanstalk.keyName>
+        <beanstalk.iamInstanceProfile>aws-elasticbeanstalk-ec2-role</beanstalk.iamInstanceProfile>
+        <beanstalk.instanceType>m1.small</beanstalk.instanceType>
+        <beanstalk.availabilityZones>us-east-1e, us-east-1d</beanstalk.availabilityZones>
+        <beanstalk.s3Bucket>your-s3-bucket</beanstalk.s3Bucket>
+        -->
+    </properties>
 
-      <!-- Common to JEE and Servlet containers -->
-      <dependency>
-         <groupId>javax.enterprise</groupId>
-         <artifactId>cdi-api</artifactId>
-         <scope>provided</scope>
-      </dependency>
+    <!--
+    <dependencies>
+        <dependency>
+           <groupId>mysite</groupId>
+           <artifactId>mysite-web</artifactId>
+        </dependency>        
+    </dependencies>
+    -->
 
-      <dependency>
-         <groupId>javax.annotation</groupId>
-         <artifactId>jsr250-api</artifactId>
-         <scope>provided</scope>
-      </dependency>
+    <build>
+        <plugins>
+            <!--
+            <plugin>
+                <groupId>br.com.ingenieux</groupId>
+                <artifactId>beanstalk-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>expose-security-credentials</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>expose-security-credentials</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <configuration>
+                    <failOnMissingWebXml>false</failOnMissingWebXml>
+                    <!--
+                    <overlays>
+                       <overlay>
+                          <groupId>mysite</groupId>
+                          <artifactId>mysite-web</artifactId>
+                          <type>jar</type>
+                       </overlay>
+                    </overlays>
+                -->
+                </configuration>
+            </plugin>
+        </plugins>
 
-      <!-- JSF 2.0 API -->
-      <dependency>
-         <groupId>javax.faces</groupId>
-         <artifactId>jsf-api</artifactId>
-      </dependency>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-war-plugin</artifactId>
+                    <version>2.4</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>2.7</version>
+                </plugin>
+                <plugin>
+                    <groupId>br.com.ingenieux</groupId>
+                    <artifactId>beanstalk-maven-plugin</artifactId>
+                    <inherited>true</inherited>
+                    <version>1.4.2</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
 
-      <!-- Optional, but pretty useful. -->
-      <!--
-         <dependency> <groupId>javax.servlet</groupId> <artifactId>jstl</artifactId> </dependency>
-      -->
-
-      <!-- Optional, but highly recommended. -->
-      <dependency>
-         <groupId>org.testng</groupId>
-         <artifactId>testng</artifactId>
-         <version>5.10</version>
-         <scope>test</scope>
-         <classifier>jdk15</classifier>
-      </dependency>
-
-      <!-- Jetty/Tomcat-specific scopes and artifacts -->
-
-      <!-- JSF 2.0 -->
-      <dependency>
-         <groupId>javax.faces</groupId>
-         <artifactId>jsf-impl</artifactId>
-         <scope>runtime</scope>
-      </dependency>
-
-      <dependency>
-         <groupId>org.jboss.weld.servlet</groupId>
-         <artifactId>weld-servlet</artifactId>
-         <scope>runtime</scope>
-      </dependency>
-
-      <dependency>
-         <groupId>org.glassfish.web</groupId>
-         <artifactId>el-impl</artifactId>
-         <scope>runtime</scope>
-         <exclusions>
-            <exclusion>
-               <groupId>javax.el</groupId>
-               <artifactId>el-api</artifactId>
-            </exclusion>
-         </exclusions>
-      </dependency>
-      <!-- end Jetty/Tomcat-specific scopes and artifacts -->
-
-      <!-- Bean Validation API (JSR 303) -->
-      <dependency>
-         <groupId>javax.validation</groupId>
-         <artifactId>validation-api</artifactId>
-      </dependency>
-
-      <!-- Bean Validation Implementation -->
-      <!-- Provides portable constraints such as @NotEmpty, @Email and @Url -->
-      <dependency>
-         <groupId>org.hibernate</groupId>
-         <artifactId>hibernate-validator</artifactId>
-         <version>4.0.0.GA</version>
-      </dependency>
-   </dependencies>
-
-   <build>
-      <finalName>Session3</finalName>
-      <plugins>
-         <!-- Compiler plugin enforces Java 1.5 compatibility -->
-         <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-compiler-plugin</artifactId>
-            <configuration>
-               <source>1.5</source>
-               <target>1.5</target>
-            </configuration>
-         </plugin>
-
-         <!-- Eclipse plugin - download source and JavaDoc jars automatically -->
-         <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-eclipse-plugin</artifactId>
-            <configuration>
-               <wtpversion>2.0</wtpversion>
-               <downloadSources>true</downloadSources>
-               <downloadJavadocs>true</downloadJavadocs>
-            </configuration>
-         </plugin>
-
-         <!-- Embedded Jetty (jetty:run) -->
-         <plugin>
-            <groupId>org.mortbay.jetty</groupId>
-            <artifactId>maven-jetty-plugin</artifactId>
-            <configuration>
-               <!-- Delete this block to have Jetty run default port (8080) -->
-               <connectors>
-                  <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
-                     <port>9090</port>
-                  </connector>
-               </connectors>
-               <!-- force friendly name instead of artifact name + version -->
-               <contextPath>${project.build.finalName}</contextPath>
-               <!-- Where the BeanManager is constructed. This is where you'll declare datasources. -->
-               <jettyEnvXml>${basedir}/src/test/resources/jetty-env.xml</jettyEnvXml>
-               <!-- This parameter will auto-deploy modified classes. -->
-               <!-- You can save changes in a file or class and refresh your browser to view the changes. -->
-               <scanIntervalSeconds>3</scanIntervalSeconds>
-            </configuration>
-         </plugin>
-
-         <!-- Embedded Tomcat (package tomcat:run) -->
-         <!-- Standalone Tomcat (package tomcat:deploy) -->
-         <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>tomcat-maven-plugin</artifactId>
-            <configuration>
-               <path>/${project.build.finalName}</path>
-               <!-- Embedded port -->
-               <port>9090</port>
-               <!--
-                  The default authentication credentials for remote deployment are username "admin" with no password To
-                  override credentials, define a server in settings.xml and activate it using the <server> element
-               -->
-               <url>http://localhost:8080/manager</url>
-            </configuration>
-         </plugin>
-      </plugins>
-   </build>
+    <profiles>
+        <profile>
+            <id>deploy</id>
+            <build>
+                <defaultGoal>deploy</defaultGoal>
+                <plugins>
+                    <plugin>
+                        <groupId>br.com.ingenieux</groupId>
+                        <artifactId>beanstalk-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>deploy</id>
+                                <phase>deploy</phase>
+                                <goals>
+                                    <goal>fast-deploy</goal>
+                                    <goal>replace-environment</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <skipEnvironmentUpdate>true</skipEnvironmentUpdate>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>fast-deploy</id>
+            <build>
+                <defaultGoal>deploy</defaultGoal>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-war-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>default-war</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>exploded</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>br.com.ingenieux</groupId>
+                        <artifactId>beanstalk-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>deploy</id>
+                                <phase>deploy</phase>
+                                <goals>
+                                    <goal>fast-deploy</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>worker</id>
+            <properties>
+                <beanstalk.environmentRef>Test20-worker</beanstalk.environmentRef>
+                <beanstalk.environmentName>Test20-worker</beanstalk.environmentName>
+                <beanstalk.environmentTierName>Worker</beanstalk.environmentTierName>
+                <beanstalk.sqsdHttpPath>/services/api/v1/sqsd</beanstalk.sqsdHttpPath>
+            </properties>
+        </profile>
+        <profile>
+            <id>s3-deploy</id>
+            <properties>
+                <maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
+                <beanstalk.versionLabel>${maven.build.timestamp}</beanstalk.versionLabel>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>br.com.ingenieux</groupId>
+                        <artifactId>beanstalk-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>deploy</id>
+                                <phase>deploy</phase>
+                                <goals>
+                                    <goal>upload-source-bundle</goal>
+                                    <goal>create-application-version</goal>
+                                    <!-- replace to replace-environment or blue-green
+                                         if you want zero downtime or blue-green -->
+                                    <goal>put-environment</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>bluegreen-s3-deploy</id>
+            <properties>
+                <maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
+                <beanstalk.versionLabel>${maven.build.timestamp}</beanstalk.versionLabel>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>br.com.ingenieux</groupId>
+                        <artifactId>beanstalk-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>deploy</id>
+                                <phase>deploy</phase>
+                                <goals>
+                                    <goal>upload-source-bundle</goal>
+                                    <goal>create-application-version</goal>
+                                    <!-- replace to replace-environment or blue-green
+                                         if you want zero downtime or blue-green -->
+                                    <goal>blue-green</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
